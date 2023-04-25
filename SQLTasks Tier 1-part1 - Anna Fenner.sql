@@ -52,31 +52,23 @@ SELECT * FROM `Facilities` WHERE facid IN (1, 5);
 'cheap' or 'expensive', depending on if their monthly maintenance cost is
 more than $100. Return the name and monthly maintenance of the facilities
 in question. */
-SELECT name, expense_label AS updated_monthlymaintenance
+SELECT name, CASE WHEN monthlymaintenance < 100 THEN 'cheap' ELSE 'expensive' END AS facility_label
 FROM `Facilities` 
-
-
 
 /* Q6: You'd like to get the first and last name of the last member(s)
 who signed up. Try not to use the LIMIT clause for your solution. */
-SELECT MAX(firstname) AS lastest_firstname, MAX(surname) AS latest_surname, MIN(firstname) AS first_firstname, MIN(surname) AS first_surname
+SELECT MAX(firstname) AS lastest_firstname, MAX(surname) AS latest_surname
 FROM `Members`
 ORDER BY joindate ASC;
-
-
-/*below is how not to do it. 
-(SELECT firstname, surname FROM `Members` ORDER BY joindate LIMIT 1) 
-UNION 
-(SELECT firstname, surname FROM `Members` ORDER BY joindate DESC LIMIT 1);
 
 
 /* Q7: Produce a list of all members who have used a tennis court.
 Include in your output the name of the court, and the name of the member
 formatted as a single column. Ensure no duplicate data, and order by
 the member name. */
-SELECT DISTINCT m.firstname, m.surname, f.name
+SELECT DISTINCT CONCAT(m.firstname, ' ', m.surname), f.name
 FROM Bookings AS b
-INNER JOIN Facilities AS f 
+INNER JOIN Facilities AS f
 ON b.facid = f.facid 
 INNER JOIN Members AS m 
 ON b.memid =m.memid
@@ -88,7 +80,7 @@ different costs to members (the listed costs are per half-hour 'slot'), and
 the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
-SELECT f.name, CONCAT(m.firstname,' ', m.surname) AS first_last_name,
+SELECT DISTINCT CONCAT(m.firstname, ' ', m.surname) AS first_last_name, f.name, 
 CASE WHEN b.memid =0
 THEN f.guestcost * b.slots
 ELSE f.membercost * b.slots 
@@ -106,6 +98,10 @@ ELSE f.membercost * b.slots
 END > 30
 ORDER BY member_or_guest_cost DESC;
 
+
+
+
+
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
 SELECT *
 FROM 
@@ -118,6 +114,8 @@ FROM
 WHERE sub.member_or_guest_cost > 30
 AND sub.startdate LIKE '2012-09-14%'
 ORDER BY sub.member_or_guest_cost DESC;
+
+
 
 /*  https://stackoverflow.com/questions/33603744/sql-inner-joining-2-subqueries 
 
@@ -135,15 +133,18 @@ Complete the remaining tasks in the Jupyter interface. If you struggle, feel fre
 to the PHPMyAdmin interface as and when you need to. 
 
 You'll need to paste your query into value of the 'query1' variable and run the code block again to get an output.
- 
+ SUM(facility_revenue) AS facilities_total_revenue
+FROM
 QUESTIONS:
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
 
 
+
 /* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
 
+    
 
 /* Q12: Find the facilities with their usage by member, but not guests */
 
